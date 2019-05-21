@@ -4,8 +4,8 @@
 
 # Site
 title: "Neverfelly's Blog"
-subtitle:
-description:
+subtitle: 
+description: "運命の果実を一緒に食べよう!"
 keywords:
 author: neverfelly
 language: zh-CN
@@ -73,7 +73,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: hexo-theme-primer
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

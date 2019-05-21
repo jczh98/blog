@@ -1,0 +1,10 @@
+language:  node_js
+node_js:  stable
+script:
+  -  npm  install
+  -  hexo  cl
+after_success:
+  -  git  config  --global  user.name  "neverfelly" 
+  -  git  config  --global  user.email  "neverfelly@gmail.com"
+  -  sed  -i''  "/^ *repo/s~github\.com~${GH_TOKEN}@github.com~"  _config.yml
+  -  hexo  deploy  -g
