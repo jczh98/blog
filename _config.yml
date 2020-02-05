@@ -8,7 +8,7 @@ subtitle:
 description: "運命の果実を一緒に食べよう!"
 keywords:
 author: neverfelly
-language: zh-CN
+language: zh-cn
 timezone:
 
 # URL
@@ -73,7 +73,7 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: hexo-theme-primer
+theme: hexo-theme-minos
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

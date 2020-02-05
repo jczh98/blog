@@ -1,10 +1,12 @@
 ---
 title: 《LEARNING TO OPTIMIZE》
-updated: 2019-07-06 19:49:49
+date: 2019-07-05 19:49:49
 categories:
-- paper
+- Technology
 ---
 这篇paper提出了一种结合reinforcement learning与optimize的机器学习objective function的优化算法寻找方法。文章首先提出了一种general的optimize框架，即优化为设计一个$\pi$函数，使得每次迭代的$\Delta x$由$\pi$函数决定。常见的optimize函数的$\pi$: Gradient Descent: $-\gamma \nabla f(x^{i-1})$, Momentum: $-\gamma \sum_{j=0}^{i-1}\alpha^{i-1-j}\nabla f(x^{i-1})$ 。让机器学习优化算法便规约到了让寻找特定objective function下的$\pi$函数下，这个函数本身可以被看做为目标函数的优化策略，所以可以结合reinforcement learning里的policy method去求解这样的一个问题。
+
+<!-- more -->
 
 ## Guide policy search
 
@@ -20,7 +22,7 @@ $$
 
 对于更新$\pi$（监督相）,GPS最小化KL-divergence.假定固定协方差忽略多重变量。
 $$
-\mathbb{E}_{\psi}\left[\sum_{t=0}^{T}\left(\mathbb{E}_{\pi}\left[a_{t} | s_{t}\right]-\mathbb{E}_{\psi}\left[a_{t} | s_{t}, t\right]\right)^{T} G_{t}^{-1}\left(\mathbb{E}_{\pi}\left[a_{t} | s_{t}\right]-\mathbb{E}_{\psi}\left[a_{t} | s_{t}, t\right]\right)\right]
+\mathbb{E}_{\psi}
 $$
 Note:没有经过仔细推导，感觉数学还是太弱了，有时间一定好好打数理基础。
 
