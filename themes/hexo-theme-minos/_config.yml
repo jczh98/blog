@@ -48,8 +48,8 @@ comment:
 
 # Other plugins and their settings.
 plugins:
-  mathjax: false
-  katex: true
+  mathjax: true
+  katex: false
   gallery: true
   clipboard: true
   google-analytics:

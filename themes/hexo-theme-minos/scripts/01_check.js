@@ -15,7 +15,7 @@ function checkDependency(name) {
     try {
         require.resolve(name);
         return true;
-    } catch(e) {
+    } catch (e) {
         logger.error(`Package ${name} is not installed.`)
     }
     return false;
@@ -34,7 +34,7 @@ const missingDeps = [
     'hexo-generator-index',
     'hexo-generator-tag',
     'hexo-renderer-ejs',
-    'hexo-renderer-pandoc',
+    'hexo-renderer-marked',
     'hexo-renderer-sass',
 ].map(checkDependency).some(installed => !installed);
 if (missingDeps) {
