@@ -23,11 +23,11 @@ article:
 
 # Navigation bar menu links.
 menu:
-  Archives: /archives
-  Lifestyle: /categories/LifeStyle
-  Music: /categories/Music
-  Technology: /categories/Technology
-  About: /about
+  归档: /archives
+  生活: /categories/LifeStyle
+  音乐: /categories/Music
+  技术: /categories/Technology
+  关于: /about
 
 # Search plugin settings.
 search:
