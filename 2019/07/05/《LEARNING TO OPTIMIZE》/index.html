@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+<title>《LEARNING TO OPTIMIZE》 - Neverfelly&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="運命の果実を一緒に食べよう!">
+
+
+
+
+
+    <meta name="description" content="这篇paper提出了一种结合reinforcement learning与optimize的机器学习objective function的优化算法寻找方法。文章首先提出了一种general的optimize框架，即优化为设计一个$\pi$函数，使得每次迭代的$\Delta x$由$\pi$函数决定。常见的optimize函数的$\pi$: Gradient Descent: $-\gamma \n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《LEARNING TO OPTIMIZE》">
+<meta property="og:url" content="http://blog.rechinx.top/2019/07/05/《LEARNING TO OPTIMIZE》/index.html">
+<meta property="og:site_name" content="Neverfelly&#39;s Blog">
+<meta property="og:description" content="这篇paper提出了一种结合reinforcement learning与optimize的机器学习objective function的优化算法寻找方法。文章首先提出了一种general的optimize框架，即优化为设计一个$\pi$函数，使得每次迭代的$\Delta x$由$\pi$函数决定。常见的optimize函数的$\pi$: Gradient Descent: $-\gamma \n">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2020-02-14T14:10:45.079Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《LEARNING TO OPTIMIZE》">
+<meta name="twitter:description" content="这篇paper提出了一种结合reinforcement learning与optimize的机器学习objective function的优化算法寻找方法。文章首先提出了一种general的optimize框架，即优化为设计一个$\pi$函数，使得每次迭代的$\Delta x$由$\pi$函数决定。常见的optimize函数的$\pi$: Gradient Descent: $-\gamma \n">
+
+
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+<link rel="stylesheet" href="/css/style.css">
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+</head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                <img src="/images/logo.png" alt height="28">
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item " href="/archives">归档</a>
+            
+            <a class="navbar-item " href="/categories/LifeStyle">生活</a>
+            
+            <a class="navbar-item " href="/categories/Music">音乐</a>
+            
+            <a class="navbar-item " href="/categories/Technology">技术</a>
+            
+            <a class="navbar-item " href="/about">关于</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="搜索" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/ppoffice/hexo-theme-minos">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            《LEARNING TO OPTIMIZE》
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2019-07-05T19:49:49.000Z" itemprop="datePublished">7月 5 2019</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/Technology/">Technology</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            6 分钟 读完 (约 881 字)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <p>这篇paper提出了一种结合reinforcement learning与optimize的机器学习objective function的优化算法寻找方法。文章首先提出了一种general的optimize框架，即优化为设计一个$\pi$函数，使得每次迭代的$\Delta x$由$\pi$函数决定。常见的optimize函数的$\pi$: Gradient Descent: $-\gamma \nabla f(x^{i-1})$, Momentum: $-\gamma \sum_{j=0}^{i-1}\alpha^{i-1-j}\nabla f(x^{i-1})$ 。让机器学习优化算法便规约到了让寻找特定objective function下的$\pi$函数下，这个函数本身可以被看做为目标函数的优化策略，所以可以结合reinforcement learning里的policy method去求解这样的一个问题。</p>
+<a id="more"></a>
+
+<h2 id="Guide-policy-search"><a href="#Guide-policy-search" class="headerlink" title="Guide policy search"></a>Guide policy search</h2><p>前面介绍了一些related work诸如meta learning, program induction, hyperparameter optimization之类的，大意是：你们的方法很好，但在我们的task上无用或只在special task上起作用（希望我没读错）。然后再介绍了一堆reinforcement learning的背景知识，比如markov decision process之类的前置技能。然后花了一页讲了这篇paper的核心，guide policy search。</p>
+<p>这是一种policy method，主要是为了解决model-free方法再大型网络里效率不高的问题而提出的的一种结合model-free search和model-based search的方法。通过不断交替计算trajectories和训练策略网络逐步迭代（怎么这么像GAN呢）。GPS的数学描述如下<br>$$<br>\min_{\theta,\eta} \mathbb{E} [\sum_{t=0}^{T}c(s_t)] \quad \text{s.t.} \quad \psi(a_t|s_t,t;\eta)=\pi(a_t|s_t;\theta) \forall a_t,s_t,t<br>$$<br>即在限制stationary policy与time-varying target policy相等下最小化一定trajectories上的cost的均值，假定$\psi$在每个时刻状态上服从conditionally Gaussian(没看懂…)，并把约束放宽到$\psi$与$\pi$两者的KL-divergence足够小。</p>
+<p>对于更新$\psi$（轨迹相）,用二次函数近似cost,即$c(s_t) \approx {1\over 2}s_t^TC_ts_t+d_t^Ts_t+h_t$，之后展开式子之后可用dp方法解决</p>
+<p>对于更新$\pi$（监督相）,GPS最小化KL-divergence.假定固定协方差忽略多重变量。<br>$$<br>\mathbb{E}_{\psi}<br>$$<br>Note:没有经过仔细推导，感觉数学还是太弱了，有时间一定好好打数理基础。</p>
+<h2 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h2><p>大概就用GPS去建模目标函数的$\pi$ ，主要用一个50个hidden layer的小型网络拟合$\pi$，实现细节似乎与GPS没什么差别，在logistic regression, robust linear regression, neural net classifer上进行了不同的实验，与Gradient Descent， Momentum， Conjugate Gradient， L-BFGS进行对比实验。大概可以看出收敛得比较快，收敛值比较高。</p>
+<h2 id="主要贡献"><a href="#主要贡献" class="headerlink" title="主要贡献"></a>主要贡献</h2><ul>
+<li>提出了解决optimize的一种新思路，即使在AutoML盛行的2019年里，我浅薄的知识也很少看到相关的work</li>
+<li>将强化学习中policy search用在了自动化搜索方面，或许可以扩展出强化学习应用在神经网络搜索里，不过这似乎属于遗传算法/进化算法的内容？</li>
+</ul>
+<p>(才疏学浅，看不出来了)</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li>优化方法了解得比较少，优化方法真的如paper开头里提出的一样能用统一框架描述吗？</li>
+<li>ICLR近几年的主题都有optimize相关的paper，hand-enginered algorithm真的比不过搜索出来的方法吗？</li>
+</ul>
+
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2020/02/14/几个数学题/">几个数学题</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2019/06/01/为什么《我的英雄学院》称不上一部伟大的作品/">为什么《我的英雄学院》称不上一部伟大的作品</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+<div class="sharebox">
+    
+<div class="notification is-danger">
+    You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.
+</div>
+
+</div>
+
+
+
+<div class="comments">
+    <h3 class="title is-4">评论</h3>
+    
+<div id="disqus_thread">
+    
+    <div class="notification is-danger">
+        You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.
+    </div>
+    
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 neverfelly&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" href="https://github.com/ppoffice/hexo-theme-minos">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("zh-CN");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['$$','$$']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+<script src="/js/script.js"></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="站内搜索">
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js"></script>
+    
+</body>
+</html>
